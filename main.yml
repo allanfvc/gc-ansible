@@ -2,3 +2,7 @@
   roles:
   - postgresql
   become: yes
+- hosts: app
+  roles:
+  - application
+  become: yes

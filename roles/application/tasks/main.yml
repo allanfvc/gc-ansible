@@ -4,15 +4,27 @@
         - nodejs
         - npm
         - git
+        - unzip
       update_cache: yes
     become: yes
-  - name: Clone repo
-    git:
-      repo: 'https://github.com/joaquimpedrooliveira/node-js-getting-started'
-      dest: /var/www/nodejs-app
+  - name: "Download app from s3 bucket"
+    get_url:
+      url: https://allanfvc.s3.amazonaws.com/files/app.zip
+      dest: /www/
+      mode: '0755'
     become: yes
-  - name: Install project dependencies
+  - name: "Unzip app"
+    shell:  rm -rf app/ && unzip app.zip
+    args:
+      chdir: /www/
+    become: yes
+  - name: "Install app dependencies"
     npm:
-      path: /var/www/nodejs-app
+      path: /www/app/
       state: present
+    become: yes
+  - name: "Start app"
+    shell: DATABASE_URL=postgres://{{ db_user }}:{{ db_password }}@{{ db_ip_addr }}:5432/{{ db_name }} node index.js 
+    args:
+      chdir: /www/app/
     become: yes
