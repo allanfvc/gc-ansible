@@ -14,10 +14,12 @@
     state: started
     enabled: true
 - name: Configure host based authentication.
-  copy:
-    src: files/pg_hba.conf
+  template:
+    src: templates/pg_hba.conf.j2
     dest: /etc/postgresql/10/main/pg_hba.conf
     mode: 0600
+    vars: 
+      app_network: '{{ app_network }}'
   notify: restart postgresql
 - name: Configure host based authentication.
   copy:
