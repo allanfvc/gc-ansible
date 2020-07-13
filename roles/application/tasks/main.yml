@@ -10,21 +10,24 @@
   - name: "Download app from s3 bucket"
     get_url:
       url: https://allanfvc.s3.amazonaws.com/files/app.zip
-      dest: /www/
+      dest: /tmp/
       mode: '0755'
     become: yes
   - name: "Unzip app"
-    shell:  rm -rf app/ && unzip app.zip
+    shell:  rm -rf app/ && unzip app.zip -d app
     args:
-      chdir: /www/
+      chdir: /tmp/
     become: yes
+  - name: Install pm2
+    npm: name=pm2 global=yes production=yes
   - name: "Install app dependencies"
     npm:
-      path: /www/app/
+      path: /tmp/app/
       state: present
     become: yes
   - name: "Start app"
-    shell: DATABASE_URL=postgres://{{ db_user }}:{{ db_password }}@{{ db_ip_addr }}:5432/{{ db_name }} node index.js 
-    args:
-      chdir: /www/app/
+    shell: | 
+      cd /tmp/app 
+      export DATABASE_URL=postgres://{{ db_user }}:{{ db_password }}@{{ db_ip_addr }}:5432/{{ db_name }} 
+      pm2 -f start index.js --name app
     become: yes

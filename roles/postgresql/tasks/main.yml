@@ -18,15 +18,15 @@
     src: templates/pg_hba.conf.j2
     dest: /etc/postgresql/10/main/pg_hba.conf
     mode: 0600
-    vars: 
-      app_network: '{{ app_network }}'
   notify: restart postgresql
-- name: Configure host based authentication.
+  become: true
+- name: Configure listen bnetworks.
   copy:
     src: files/postgresql.conf
     dest: /etc/postgresql/10/main/postgresql.conf
     mode: 0600
   notify: restart postgresql
+  become: true
 - name: Ensure PostgreSQL databases are present.
   postgresql_db:
     name: '{{ db_name }}'
