@@ -7,7 +7,7 @@
     - postgresql
     - postgresql-contrib
     - libpq-dev
-    - python3-psycopg2
+    - python-psycopg2
 - name: Ensure PostgreSQL is started and enabled on boot.
   service:
     name: postgresql
@@ -42,7 +42,9 @@
     state: present
     db: '{{ db_name }}'
     priv: "ALL"
+    encrypted: true
   become: true
   become_user: postgres
+  notify: restart postgresql
   vars:
     ansible_ssh_pipelining: true

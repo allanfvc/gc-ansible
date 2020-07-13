@@ -8,10 +8,10 @@
       update_cache: yes
     become: yes
   - name: "Download app from s3 bucket"
-    get_url:
-      url: https://allanfvc.s3.amazonaws.com/files/app.zip
-      dest: /tmp/
-      mode: '0755'
+    shell: |
+      aws s3 cp s3://allanfvc/files/app.zip app.zip
+    args:
+      chdir: /tmp/
     become: yes
   - name: "Unzip app"
     shell:  rm -rf app/ && unzip app.zip -d app
